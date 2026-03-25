@@ -10,7 +10,6 @@ def save_image(width, height, output_file):
     image = Image.frombytes("RGB", (width, height), data)
     image = image.transpose(Image.FLIP_TOP_BOTTOM)
     image.save(output_file)
-    print(f"Saved {output_file}")
 
 
 def get_display_function(draw_func, width, height, output_file):
