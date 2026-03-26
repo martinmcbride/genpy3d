@@ -25,6 +25,7 @@ class Axes:
     size: tuple = (1, 1, 1) # (x, y, z) size of axes in device space
     divs: tuple = (0.2, 0.2, 0.2) # (x, y, z) divisions in use space
     text_offset: tuple = ((0.03, 0.06, 0), (0.12, 0.03, 0), (0.03, 0.06, 0))
+    axis_text_offset: tuple = ((0.03, 0.18, 0), (0.18, 0.03, 0), (0.03, 0.18, 0))
     axis_colors: tuple = ((0.4, 0.4, 0.4),)*3
     axis_line_width: float = 3
     div_colors: tuple = ((0.6, 0.6, 0.6),)*3
@@ -139,6 +140,7 @@ class Axes:
 
     def _draw_axis_labels(self):
 
+        # Draw x tick labels
         glColor3f(*self.axis_colors[0])
         markers = self._get_divs(self.start[0], self.extent[0], self.divs[0])
         for m in markers:
@@ -148,6 +150,12 @@ class Axes:
             for c in label:
                 glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, ord(c))
 
+        # Draw x axis label
+        pos = self.transform_from_graph((self.start[0]+self.extent[0]/2, self.start[1]+self.extent[1], 0))
+        glRasterPos3f(pos[0] + self.axis_text_offset[0][0], pos[1] + self.axis_text_offset[0][1], 0)
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, ord("X"))
+
+        # Draw Y tick labels
         glColor3f(*self.axis_colors[1])
         markers = self._get_divs(self.start[1], self.extent[1], self.divs[1])
         for m in markers:
@@ -157,6 +165,12 @@ class Axes:
             for c in label:
                 glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, ord(c))
 
+        # Draw y axis label
+        pos = self.transform_from_graph((self.start[0] + self.extent[0], self.start[1] + self.extent[1]/2, 0))
+        glRasterPos3f(pos[0] + self.axis_text_offset[1][0], pos[1] + self.axis_text_offset[1][1], 0)
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, ord("Y"))
+
+        # Draw z tick labels
         glColor3f(*self.axis_colors[2])
         markers = self._get_divs(self.start[2], self.extent[2], self.divs[2])
         for m in markers:
@@ -165,6 +179,11 @@ class Axes:
             label = f"{m:.1f}"
             for c in label:
                 glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, ord(c))
+
+        # Draw z axis label
+        pos = self.transform_from_graph((0, self.start[1]+self.extent[1], self.start[2]+self.extent[2]/2))
+        glRasterPos3f(0, pos[1] + self.axis_text_offset[2][1],  pos[2] + self.axis_text_offset[2][2])
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, ord("Z"))
 
 
     def draw(self):
