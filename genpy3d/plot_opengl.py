@@ -1,8 +1,10 @@
+import math
 from dataclasses import dataclass
 from typing import Callable, Type
 
 import numpy as np
 from OpenGL.GL import *
+from OpenGL.GLU import *
 from OpenGL.GLUT import *
 
 from genpy3d.axes_opengl import Axes
@@ -16,6 +18,13 @@ class Plot_z_of_xy:
     precision: float = 100
     fore_colormap: Callable = get_viridis_color
     back_colormap: Callable = get_grey_color
+    x_grid_count: int = 10
+    y_grid_count: int = 10
+    line_radius = 0.004
+
+    def __post_init__(self):
+        self.x_range_min, self.x_range_max = self.axes.start[0], self.axes.start[0] + self.axes.extent[0]
+        self.y_range_min, self.y_range_max = self.axes.start[1], self.axes.start[1] + self.axes.extent[1]
 
     def of_function(self, func):
         self.plotfunc = func
@@ -29,7 +38,6 @@ class Plot_z_of_xy:
     def _clip(self):
         # Define 6 clipping planes for the axes cuboid
 
-        print(self.axes.size)
         # x >= 0  →  +x plane
         glClipPlane(GL_CLIP_PLANE0, [1.0, 0.0, 0.0, 0.0])
         glEnable(GL_CLIP_PLANE0)
@@ -62,22 +70,42 @@ class Plot_z_of_xy:
         glDisable(GL_CLIP_PLANE4)
         glDisable(GL_CLIP_PLANE5)
 
-    def draw(self):
-        glColor3f(0.2, 0.7, 1.0)
+    def _draw_cylinder(self, p1, p2):
+        """Draw a cylinder from p1 to p2"""
+        # Vector from p1 to p2
+        dx, dy, dz = p2[0] - p1[0], p2[1] - p1[1], p2[2] - p1[2]
+        length = math.sqrt(dx * dx + dy * dy + dz * dz)
 
-        step = 0.02
-        x_range_min, x_range_max = self.axes.start[0], self.axes.start[0] + self.axes.extent[0]
-        y_range_min, y_range_max = self.axes.start[1], self.axes.start[1] + self.axes.extent[1]
+        if length == 0:
+            return
 
-        self._clip()
+        # Save current matrix
+        glPushMatrix()
+        glTranslatef(*p1)
 
+        # Compute rotation axis and angle
+        import numpy as np
+        axis = np.cross([0, 0, 1], [dx, dy, dz])
+        angle = math.degrees(math.acos(dz / length)) if length != 0 else 0
+
+        if np.linalg.norm(axis) > 1e-6:
+            glRotatef(angle, *axis)
+
+        # Draw cylinder along z-axis
+        quad = gluNewQuadric()
+        gluCylinder(quad, self.line_radius, self.line_radius, length, 8, 1)
+        gluDeleteQuadric(quad)
+
+        glPopMatrix()
+
+    def _plot_surface(self):
         glEnable(GL_CULL_FACE)
-
         glCullFace(GL_BACK)
 
-        for x in np.linspace(x_range_min, x_range_max, self.precision):
+        step = (self.x_range_max - self.x_range_min) / (self.precision - 1)
+        for x in np.linspace(self.x_range_min, self.x_range_max, self.precision):
             glBegin(GL_TRIANGLE_STRIP)
-            for y in np.linspace(y_range_min, y_range_max, self.precision):
+            for y in np.linspace(self.y_range_min, self.y_range_max, self.precision):
                 z1 = self.plotfunc(x, y)
                 z2 = self.plotfunc(x + step, y)
 
@@ -89,9 +117,9 @@ class Plot_z_of_xy:
 
         glCullFace(GL_FRONT)
 
-        for x in np.linspace(x_range_min, x_range_max, self.precision):
+        for x in np.linspace(self.x_range_min, self.x_range_max, self.precision):
             glBegin(GL_TRIANGLE_STRIP)
-            for y in np.linspace(y_range_min, y_range_max, self.precision):
+            for y in np.linspace(self.y_range_min, self.y_range_max, self.precision):
                 z1 = self.plotfunc(x, y)
                 z2 = self.plotfunc(x + step, y)
 
@@ -101,6 +129,35 @@ class Plot_z_of_xy:
                 glVertex3f(*self.axes.transform_from_graph((x + step, y, z2)))
             glEnd()
 
-        self._unclip()
-
         glDisable(GL_CULL_FACE)
+
+    def _plot_lines(self):
+        glColor3f(0.3, 0.3, 0.3)
+        glLineWidth(4)
+
+        for x in np.linspace(self.x_range_min, self.x_range_max, self.x_grid_count):
+            points = []
+            for y in np.linspace(self.y_range_min, self.y_range_max, 500):
+                z = self.plotfunc(x, y)
+                points.append(self.axes.transform_from_graph((x, y, z)))
+            for i in range(len(points) - 1):
+                self._draw_cylinder(points[i], points[i + 1])
+
+        for y in np.linspace(self.y_range_min, self.y_range_max, self.y_grid_count):
+            points = []
+            for x in np.linspace(self.x_range_min, self.x_range_max, 500):
+                z = self.plotfunc(x, y)
+                points.append(self.axes.transform_from_graph((x, y, z)))
+            for i in range(len(points) - 1):
+                self._draw_cylinder(points[i], points[i + 1])
+
+
+    def draw(self):
+
+        self._clip()
+
+        self._plot_surface()
+        self._plot_lines()
+
+
+        self._unclip()
