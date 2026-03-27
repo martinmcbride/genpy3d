@@ -255,6 +255,10 @@ def get_color(z, z_min, z_max):
 
     return r, g, b
 
+def get_back_color(z, z_min, z_max):
+
+    return 0.5, 0.5, 0.5
+
 def clip_unit():
     #glClearColor(0.0, 0.0, 0.0, 1.0)
 
@@ -284,9 +288,18 @@ def clip_unit():
     glClipPlane(GL_CLIP_PLANE5, [0.0, 0.0, -1.0, 1.0])
     glEnable(GL_CLIP_PLANE5)
 
+def unclip_unit():
+    glDisable(GL_CLIP_PLANE0)
+    glDisable(GL_CLIP_PLANE1)
+    glDisable(GL_CLIP_PLANE2)
+    glDisable(GL_CLIP_PLANE3)
+    glDisable(GL_CLIP_PLANE4)
+    glDisable(GL_CLIP_PLANE5)
+
+
 def draw_surface():
     def f(x, y):
-        return 0.5 + 0.6*y*math.sin(x*10)
+        return 0.7 - y*0.4*math.sin(20*x)
 
     glColor3f(0.2, 0.7, 1.0)
 
@@ -294,6 +307,10 @@ def draw_surface():
     range_min, range_max = 0, 1
 
     clip_unit()
+
+    glEnable(GL_CULL_FACE)
+
+    glCullFace(GL_BACK)
 
     for x in np.arange(range_min, range_max, step):
         glBegin(GL_TRIANGLE_STRIP)
@@ -306,3 +323,21 @@ def draw_surface():
             glColor3f(*get_color(z2, 0, 1))
             glVertex3f(x + step, y, z2)
         glEnd()
+
+    glCullFace(GL_FRONT)
+
+    for x in np.arange(range_min, range_max, step):
+        glBegin(GL_TRIANGLE_STRIP)
+        for y in np.arange(range_min, range_max, step):
+            z1 = f(x, y)
+            z2 = f(x + step, y)
+
+            glColor3f(*get_back_color(z1, 0, 1))
+            glVertex3f(x, y, z1)
+            glColor3f(*get_back_color(z2, 0, 1))
+            glVertex3f(x + step, y, z2)
+        glEnd()
+
+    unclip_unit()
+
+    glDisable(GL_CULL_FACE)
