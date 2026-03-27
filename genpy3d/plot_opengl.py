@@ -1,0 +1,119 @@
+from dataclasses import dataclass
+from typing import Callable, Type
+
+import numpy as np
+from OpenGL.GL import *
+from OpenGL.GLUT import *
+
+from genpy3d.axes_opengl import Axes
+
+def get_bcgyr_color(z):
+    # Normalize z to range [0, 1]
+    #t = (z - z_min) / (z_max - z_min)
+
+    # Simple gradient: blue → cyan → green → yellow → red
+    r = z
+    g = 1.0 - abs(z - 0.5) * 2
+    b = 1.0 - z
+
+    return r, g, b
+
+def get_grey_color(z):
+
+    return 0.5, 0.5, 0.5
+
+
+@dataclass
+class Plot_z_of_xy:
+    axes: Type[Axes]
+    plotfunc: Callable = lambda x, y: 0
+    precision: float = 100
+    fore_colormap: Callable = get_bcgyr_color
+    back_colormap: Callable = get_grey_color
+
+
+
+    def of_function(self, func):
+        self.plotfunc = func
+        return self
+
+    def _get_color(self, colormap, z):
+        z = max(0, min(z, 1.0))
+        return colormap(z)
+
+    def _clip(self):
+        # Define 6 clipping planes for the axes cuboid
+
+        # x >= 0  →  +x plane
+        glClipPlane(GL_CLIP_PLANE0, [1.0, 0.0, 0.0, 0.0])
+        glEnable(GL_CLIP_PLANE0)
+
+        # x <= 1  →  -x + 1 >= 0
+        glClipPlane(GL_CLIP_PLANE1, [-1.0, 0.0, 0.0, 1.0])
+        glEnable(GL_CLIP_PLANE1)
+
+        # y >= 0
+        glClipPlane(GL_CLIP_PLANE2, [0.0, 1.0, 0.0, 0.0])
+        glEnable(GL_CLIP_PLANE2)
+
+        # y <= 1
+        glClipPlane(GL_CLIP_PLANE3, [0.0, -1.0, 0.0, 1.0])
+        glEnable(GL_CLIP_PLANE3)
+
+        # z >= 0
+        glClipPlane(GL_CLIP_PLANE4, [0.0, 0.0, 1.0, 0.0])
+        glEnable(GL_CLIP_PLANE4)
+
+        # z <= 1
+        glClipPlane(GL_CLIP_PLANE5, [0.0, 0.0, -1.0, 1.0])
+        glEnable(GL_CLIP_PLANE5)
+
+    def _unclip(self):
+        glDisable(GL_CLIP_PLANE0)
+        glDisable(GL_CLIP_PLANE1)
+        glDisable(GL_CLIP_PLANE2)
+        glDisable(GL_CLIP_PLANE3)
+        glDisable(GL_CLIP_PLANE4)
+        glDisable(GL_CLIP_PLANE5)
+
+    def draw(self):
+        glColor3f(0.2, 0.7, 1.0)
+
+        step = 0.02
+        range_min, range_max = 0, 1
+
+        self._clip()
+
+        glEnable(GL_CULL_FACE)
+
+        glCullFace(GL_BACK)
+
+        for x in np.linspace(range_min, range_min + range_max, self.precision):
+            glBegin(GL_TRIANGLE_STRIP)
+            for y in np.linspace(range_min, range_min + range_max, self.precision):
+                z1 = self.plotfunc(x, y)
+                z2 = self.plotfunc(x + step, y)
+
+                glColor3f(*self._get_color(self.fore_colormap, z1))
+                glVertex3f(*self.axes.transform_from_graph((x, y, z1)))
+                glColor3f(*self._get_color(self.fore_colormap, z2))
+                glVertex3f(*self.axes.transform_from_graph((x + step, y, z2)))
+            glEnd()
+
+        glCullFace(GL_FRONT)
+
+        for x in np.linspace(range_min, range_min + range_max, self.precision):
+            glBegin(GL_TRIANGLE_STRIP)
+            for y in np.linspace(range_min, range_min + range_max, self.precision):
+                z1 = self.plotfunc(x, y)
+                z2 = self.plotfunc(x + step, y)
+
+                glColor3f(*self._get_color(self.back_colormap, z1))
+                glVertex3f(*self.axes.transform_from_graph((x, y, z1)))
+                glColor3f(*self._get_color(self.back_colormap, z2))
+                glVertex3f(*self.axes.transform_from_graph((x + step, y, z2)))
+            glEnd()
+
+        self._unclip()
+
+        glDisable(GL_CULL_FACE)

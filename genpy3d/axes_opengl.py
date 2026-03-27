@@ -198,6 +198,9 @@ class Axes:
 
 
     def draw(self):
+        def f():
+            pass
+        print(type(f))
         glLineWidth(self.axis_line_width)
 
         glBegin(GL_LINES)
@@ -239,105 +242,4 @@ class Axes:
         # _draw_arrow(0,self.size[1],0,self.colors[1])
         # _draw_arrow(0,0,self.size[2],self.colors[2])
 
-        draw_surface()
-
         return self
-
-
-def get_color(z, z_min, z_max):
-    # Normalize z to range [0, 1]
-    t = (z - z_min) / (z_max - z_min)
-
-    # Simple gradient: blue → cyan → green → yellow → red
-    r = t
-    g = 1.0 - abs(t - 0.5) * 2
-    b = 1.0 - t
-
-    return r, g, b
-
-def get_back_color(z, z_min, z_max):
-
-    return 0.5, 0.5, 0.5
-
-def clip_unit():
-    #glClearColor(0.0, 0.0, 0.0, 1.0)
-
-    # Define 6 clipping planes for the unit cube
-
-    # x >= 0  →  +x plane
-    glClipPlane(GL_CLIP_PLANE0, [1.0, 0.0, 0.0, 0.0])
-    glEnable(GL_CLIP_PLANE0)
-
-    # x <= 1  →  -x + 1 >= 0
-    glClipPlane(GL_CLIP_PLANE1, [-1.0, 0.0, 0.0, 1.0])
-    glEnable(GL_CLIP_PLANE1)
-
-    # y >= 0
-    glClipPlane(GL_CLIP_PLANE2, [0.0, 1.0, 0.0, 0.0])
-    glEnable(GL_CLIP_PLANE2)
-
-    # y <= 1
-    glClipPlane(GL_CLIP_PLANE3, [0.0, -1.0, 0.0, 1.0])
-    glEnable(GL_CLIP_PLANE3)
-
-    # z >= 0
-    glClipPlane(GL_CLIP_PLANE4, [0.0, 0.0, 1.0, 0.0])
-    glEnable(GL_CLIP_PLANE4)
-
-    # z <= 1
-    glClipPlane(GL_CLIP_PLANE5, [0.0, 0.0, -1.0, 1.0])
-    glEnable(GL_CLIP_PLANE5)
-
-def unclip_unit():
-    glDisable(GL_CLIP_PLANE0)
-    glDisable(GL_CLIP_PLANE1)
-    glDisable(GL_CLIP_PLANE2)
-    glDisable(GL_CLIP_PLANE3)
-    glDisable(GL_CLIP_PLANE4)
-    glDisable(GL_CLIP_PLANE5)
-
-
-def draw_surface():
-    def f(x, y):
-        return 0.7 - y*0.4*math.sin(20*x)
-
-    glColor3f(0.2, 0.7, 1.0)
-
-    step = 0.02
-    range_min, range_max = 0, 1
-
-    clip_unit()
-
-    glEnable(GL_CULL_FACE)
-
-    glCullFace(GL_BACK)
-
-    for x in np.arange(range_min, range_max, step):
-        glBegin(GL_TRIANGLE_STRIP)
-        for y in np.arange(range_min, range_max, step):
-            z1 = f(x, y)
-            z2 = f(x + step, y)
-
-            glColor3f(*get_color(z1, 0, 1))
-            glVertex3f(x, y, z1)
-            glColor3f(*get_color(z2, 0, 1))
-            glVertex3f(x + step, y, z2)
-        glEnd()
-
-    glCullFace(GL_FRONT)
-
-    for x in np.arange(range_min, range_max, step):
-        glBegin(GL_TRIANGLE_STRIP)
-        for y in np.arange(range_min, range_max, step):
-            z1 = f(x, y)
-            z2 = f(x + step, y)
-
-            glColor3f(*get_back_color(z1, 0, 1))
-            glVertex3f(x, y, z1)
-            glColor3f(*get_back_color(z2, 0, 1))
-            glVertex3f(x + step, y, z2)
-        glEnd()
-
-    unclip_unit()
-
-    glDisable(GL_CULL_FACE)
