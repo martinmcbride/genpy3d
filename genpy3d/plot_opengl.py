@@ -6,47 +6,7 @@ from OpenGL.GL import *
 from OpenGL.GLUT import *
 
 from genpy3d.axes_opengl import Axes
-
-def get_bcgyr_color(z):
-    # Simple gradient: blue → cyan → green → yellow → red
-    r = z
-    g = 1.0 - abs(z - 0.5) * 2
-    b = 1.0 - z
-
-    return r, g, b
-
-def get_viridis_color(value):
-    # Clamp to [0, 1]
-    value = max(0.0, min(1.0, value))
-
-    # Key Viridis color stops (t, (r,g,b)) in 0–1 range
-    stops = [
-        (0.0, (0.267, 0.005, 0.329)),  # dark purple
-        (0.25, (0.283, 0.141, 0.458)),
-        (0.5, (0.254, 0.265, 0.530)),  # blue-green
-        (0.75, (0.207, 0.372, 0.553)),
-        (1.0, (0.993, 0.906, 0.144))   # yellow
-    ]
-
-    # Find the two surrounding stops
-    for i in range(len(stops) - 1):
-        t0, c0 = stops[i]
-        t1, c1 = stops[i + 1]
-
-        if t0 <= value <= t1:
-            # Normalize between t0 and t1
-            f = (value - t0) / (t1 - t0)
-
-            # Linear interpolation
-            r = c0[0] + f * (c1[0] - c0[0])
-            g = c0[1] + f * (c1[1] - c0[1])
-            b = c0[2] + f * (c1[2] - c0[2])
-
-            return r, g, b
-    return stops[-1][1]  # fallback (value == 1)
-
-def get_grey_color(z):
-    return 0.5, 0.5, 0.5
+from genpy3d.color_tables import get_viridis_color, get_grey_color
 
 
 @dataclass
