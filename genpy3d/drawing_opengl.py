@@ -1,7 +1,20 @@
+from dataclasses import dataclass
+
 from OpenGL.GL import *
 from OpenGL.GLUT import *
 from OpenGL.GLU import *
 from PIL import Image
+
+@dataclass
+class ViewParameters:
+    lookat: tuple = (2, 2, 2)
+    focal_length: float = 45
+    offset: tuple = (0, 0, 0)
+    scale: tuple = 1
+    aspect_ratio: float = 1 #height/width
+
+VIEW_1_1_1 = ViewParameters(focal_length=40, offset=(0, 0, 0.1))
+VIEW_2_2_1 = ViewParameters(offset=(0, 0, 0.85), scale=0.64, aspect_ratio=0.8)
 
 def save_image(width, height, output_file):
     glPixelStorei(GL_PACK_ALIGNMENT, 1)
@@ -12,15 +25,17 @@ def save_image(width, height, output_file):
     image.save(output_file)
 
 
-def get_display_function(draw_func, width, height, output_file):
+def get_display_function(draw_func, width, height, output_file, view_parameters=ViewParameters()):
 
     def display():
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glLoadIdentity()
 
-        gluLookAt(2, 2, 2, 0, 0, 0, 0, 0, 1)
+        gluLookAt(view_parameters.lookat[0], view_parameters.lookat[1], view_parameters.lookat[2], 0, 0, 0, 0, 0, 1)
 
-        glRotatef(0, 0, 0, 30)
+        glRotatef(0, 0, 0, 1)
+        glScalef(view_parameters.scale, view_parameters.scale, view_parameters.scale)
+        glTranslatef(view_parameters.offset[0], view_parameters.offset[1], view_parameters.offset[2])
         draw_func(width, height)
 
         glFlush()
@@ -31,7 +46,7 @@ def get_display_function(draw_func, width, height, output_file):
     return display
 
 
-def init(width, height):
+def init(width, height, view_parameters=ViewParameters()):
     glClearColor(1, 1, 1, 1)
     glEnable(GL_DEPTH_TEST)
     glEnable(GL_MULTISAMPLE)
@@ -39,21 +54,21 @@ def init(width, height):
     glEnable(GL_BLEND)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
     glMatrixMode(GL_PROJECTION)
-    gluPerspective(45, width / height, 0.1, 100)
+    gluPerspective(view_parameters.focal_length, width / height, 0.1, 100)
 
     glMatrixMode(GL_MODELVIEW)
 
 
-def make_opengl_3dimage(outfile, draw, width, height, background=0, channels=3):
+def make_opengl_3dimage(outfile, draw, width, height, background=0, channels=3, view_parameters=ViewParameters()):
     glutInit(sys.argv)
     glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH | GLUT_MULTISAMPLE)
     glutInitWindowSize(width, height)
     glutCreateWindow(b"PyOpenGL")
 
-    init(width, height)
+    init(width, height, view_parameters)
 
     draw(width, height)
 
-    glutDisplayFunc(get_display_function(draw, width, height, outfile))
+    glutDisplayFunc(get_display_function(draw, width, height, outfile, view_parameters))
 
     glutMainLoop()
