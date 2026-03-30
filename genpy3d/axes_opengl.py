@@ -161,7 +161,7 @@ class Axes:
 
         # Draw x axis label
         pos = self.transform_from_graph((self.start[0]+self.extent[0]/2, self.start[1]+self.extent[1], 0))
-        glRasterPos3f(pos[0] + view_parameters.text_offset[0][0], self._get_device_end(1) + view_parameters.text_offset[0][1], 0)
+        glRasterPos3f(pos[0] + view_parameters.axis_text_offset[0][0], self._get_device_end(1) + view_parameters.axis_text_offset[0][1], 0)
         glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, ord("X"))
 
         # Draw Y tick labels
@@ -176,7 +176,7 @@ class Axes:
 
         # Draw y axis label
         pos = self.transform_from_graph((self.start[0] + self.extent[0], self.start[1] + self.extent[1]/2, 0))
-        glRasterPos3f(self._get_device_end(0) + view_parameters.text_offset[1][0], pos[1] + view_parameters.text_offset[1][1], 0)
+        glRasterPos3f(self._get_device_end(0) + view_parameters.axis_text_offset[1][0], pos[1] + view_parameters.axis_text_offset[1][1], 0)
         glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, ord("Y"))
 
         # Draw z tick labels
@@ -191,7 +191,7 @@ class Axes:
 
         # Draw z axis label
         pos = self.transform_from_graph((0, self.start[1]+self.extent[1], self.start[2]+self.extent[2]/2))
-        glRasterPos3f(0, self._get_device_end(1) + view_parameters.text_offset[2][1],  pos[2] + view_parameters.text_offset[2][2])
+        glRasterPos3f(0, self._get_device_end(1) + view_parameters.axis_text_offset[2][1],  pos[2] + view_parameters.axis_text_offset[2][2])
         glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, ord("Z"))
 
 

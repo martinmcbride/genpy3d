@@ -6,16 +6,26 @@ from OpenGL.GLU import *
 from PIL import Image
 
 @dataclass(frozen=True)
-class ViewParameters:
+class VIEW_1_1_1:
     lookat: tuple = (2, 2, 1)
     offset: tuple = (0, 0, -.1)
     scale: tuple = 1
-    aspect_ratio: float = 0.95 #height/width
-    text_offset: tuple = ((0.03, 0.06, 0), (0.12, 0.03, 0), (0.03, 0.06, 0))
-    axis_text_offset: tuple = ((0.03, 0.18, 0), (0.18, 0.03, 0), (0.03, 0.18, 0))
+    aspect_ratio: float = 0.85 #height/width
+    text_offset: tuple = ((0.1, 0.15, 0.1), (0.2, 0, 0), (0, 0.08, 0))
+    axis_text_offset: tuple = ((0.1, 0.26, 0.1), (0.3, 0, 0.1), (0, 0.18, 0))
 
-VIEW_1_1_1 = ViewParameters()
-VIEW_2_2_1 = ViewParameters(offset=(0, 0, 0.85), scale=0.57, aspect_ratio=0.84)
+ViewParameters = VIEW_1_1_1
+
+@dataclass(frozen=True)
+class VIEW_2_2_1:
+    lookat: tuple = (2, 2, 1)
+    offset: tuple = (0, 0, 0.65)
+    scale: tuple = 0.53
+    aspect_ratio: float = 0.68 #height/width
+    text_offset: tuple = ((0.15, 0.25, 0.15), (0.3, 0, 0), (0, 0.12, 0))
+    axis_text_offset: tuple = ((0.16, 0.45, 0.16), (0.55, 0, 0.16), (0, 0.4, 0))
+
+#VIEW_2_2_1 = ViewParameters(offset=(0, 0, 0.85), scale=0.57, aspect_ratio=0.84)
 
 def save_image(width, output_file, aspect_ratio):
     glPixelStorei(GL_PACK_ALIGNMENT, 1)
