@@ -17,6 +17,16 @@ class TestAxes(unittest.TestCase):
 
         self.assertTrue(run_image_test('test_default_axes.png', creator))
 
+    def test_reverse_x_axis(self):
+
+        def creator(file):
+            def draw():
+                Axes().of_start((1, 0, 0)).with_reverse_axes((1, 0, 0)).draw(VIEW_1_1_1)
+
+            make_opengl_3dimage(file, draw, 500)
+
+        self.assertTrue(run_image_test('test_reverse_x_axis.png', creator))
+
 
     def test_wide_axes(self):
 
@@ -27,5 +37,15 @@ class TestAxes(unittest.TestCase):
             make_opengl_3dimage(file, draw, 500, view_parameters=VIEW_2_2_1)
 
         self.assertTrue(run_image_test('test_wide_axes.png', creator))
+
+    def test_reverse_wide_y_axis(self):
+
+        def creator(file):
+            def draw():
+                Axes().of_start((0, 2, 3)).with_reverse_axes((0, 1, 0)).of_size((2, 2, 1)).draw(VIEW_2_2_1)
+
+            make_opengl_3dimage(file, draw, 500, view_parameters=VIEW_2_2_1)
+
+        self.assertTrue(run_image_test('test_reverse_wide_y_axis.png', creator))
 
 

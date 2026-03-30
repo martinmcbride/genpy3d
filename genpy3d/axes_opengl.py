@@ -47,6 +47,10 @@ class Axes:
         self.size = size
         return self
 
+    def with_reverse_axes(self, flags):
+        self.reverse_axis = (flags)
+        return self
+
     def transform_from_graph(self, point):
         return [((self.start[i] + self.extent[i] - point[i]) * self.size[i] / self.extent[i])
                 if self.reverse_axis[i] else
