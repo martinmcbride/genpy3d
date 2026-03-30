@@ -5,12 +5,14 @@ from OpenGL.GLUT import *
 from OpenGL.GLU import *
 from PIL import Image
 
-@dataclass
+@dataclass(frozen=True)
 class ViewParameters:
-    lookat: tuple = (2, 2, 2)
-    offset: tuple = (0, 0, 0.1)
-    scale: tuple = .95
+    lookat: tuple = (2, 2, 1)
+    offset: tuple = (0, 0, -.1)
+    scale: tuple = 1
     aspect_ratio: float = 0.95 #height/width
+    text_offset: tuple = ((0.03, 0.06, 0), (0.12, 0.03, 0), (0.03, 0.06, 0))
+    axis_text_offset: tuple = ((0.03, 0.18, 0), (0.18, 0.03, 0), (0.03, 0.18, 0))
 
 VIEW_1_1_1 = ViewParameters()
 VIEW_2_2_1 = ViewParameters(offset=(0, 0, 0.85), scale=0.57, aspect_ratio=0.84)
