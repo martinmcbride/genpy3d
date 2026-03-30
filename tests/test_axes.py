@@ -10,7 +10,7 @@ class TestAxes(unittest.TestCase):
     def test_default_axes(self):
 
         def creator(file):
-            def draw(width, height):
+            def draw():
                 Axes().draw()
 
             make_opengl_3dimage(file, draw, 500)
@@ -21,7 +21,7 @@ class TestAxes(unittest.TestCase):
     def test_wide_axes(self):
 
         def creator(file):
-            def draw(width, height):
+            def draw():
                 Axes().of_size((2, 2, 1)).draw()
 
             make_opengl_3dimage(file, draw, 500, view_parameters=VIEW_2_2_1)
