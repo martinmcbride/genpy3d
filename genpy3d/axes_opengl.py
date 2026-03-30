@@ -198,9 +198,6 @@ class Axes:
 
 
     def draw(self):
-        def f():
-            pass
-        print(type(f))
         glLineWidth(self.axis_line_width)
 
         glBegin(GL_LINES)

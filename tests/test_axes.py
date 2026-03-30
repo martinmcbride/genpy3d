@@ -1,5 +1,5 @@
 import unittest
-from genpy3d.drawing_opengl import make_opengl_3dimage
+from genpy3d.drawing_opengl import make_opengl_3dimage, VIEW_2_2_1
 from genpy3d.axes_opengl import Axes
 from genpy3d.plot_opengl import Plot_z_of_xy
 from tests.image_test_helper import run_image_test
@@ -11,10 +11,9 @@ class TestAxes(unittest.TestCase):
 
         def creator(file):
             def draw(width, height):
-                axes = Axes().of_size((1, 1, 1)).of_start((0, 0, 0)).draw()
-                Plot_z_of_xy(axes).of_function(lambda x, y: 0.8).draw()
+                Axes().draw()
 
-            make_opengl_3dimage(file, draw, 500, 500)
+            make_opengl_3dimage(file, draw, 500)
 
         self.assertTrue(run_image_test('test_default_axes.png', creator))
 
@@ -23,9 +22,9 @@ class TestAxes(unittest.TestCase):
 
         def creator(file):
             def draw(width, height):
-                Axes().of_size((1, 1, 0.5)).of_start((0, 0, 0)).draw()
+                Axes().of_size((2, 2, 1)).draw()
 
-            make_opengl_3dimage(file, draw, 500, 500)
+            make_opengl_3dimage(file, draw, 500, view_parameters=VIEW_2_2_1)
 
         self.assertTrue(run_image_test('test_wide_axes.png', creator))
 

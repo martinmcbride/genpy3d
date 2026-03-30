@@ -8,13 +8,13 @@ from PIL import Image
 @dataclass
 class ViewParameters:
     lookat: tuple = (2, 2, 2)
-    focal_length: float = 45
-    offset: tuple = (0, 0, 0)
+    focal_length: float = 40
+    offset: tuple = (0, 0, 0.1)
     scale: tuple = 1
     aspect_ratio: float = 1 #height/width
 
-VIEW_1_1_1 = ViewParameters(focal_length=40, offset=(0, 0, 0.1))
-VIEW_2_2_1 = ViewParameters(offset=(0, 0, 0.85), scale=0.64, aspect_ratio=0.8)
+VIEW_1_1_1 = ViewParameters()
+VIEW_2_2_1 = ViewParameters(offset=(0, 0, 0.85), scale=0.57, aspect_ratio=0.84)
 
 def save_image(width, height, output_file):
     glPixelStorei(GL_PACK_ALIGNMENT, 1)
@@ -25,9 +25,10 @@ def save_image(width, height, output_file):
     image.save(output_file)
 
 
-def get_display_function(draw_func, width, height, output_file, view_parameters=ViewParameters()):
+def get_display_function(draw_func, width, height, output_file, view_parameters):
 
     def display():
+
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glLoadIdentity()
 
@@ -59,7 +60,10 @@ def init(width, height, view_parameters=ViewParameters()):
     glMatrixMode(GL_MODELVIEW)
 
 
-def make_opengl_3dimage(outfile, draw, width, height, background=0, channels=3, view_parameters=ViewParameters()):
+def make_opengl_3dimage(outfile, draw, width, height=None, background=0, channels=3, view_parameters=ViewParameters()):
+    if height is None:
+        height = int(width * view_parameters.aspect_ratio)
+
     glutInit(sys.argv)
     glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH | GLUT_MULTISAMPLE)
     glutInitWindowSize(width, height)
@@ -69,6 +73,7 @@ def make_opengl_3dimage(outfile, draw, width, height, background=0, channels=3, 
 
     draw(width, height)
 
+    print(view_parameters)
     glutDisplayFunc(get_display_function(draw, width, height, outfile, view_parameters))
 
-    glutMainLoop()
+    glutMainLoopEvent()
