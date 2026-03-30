@@ -15,12 +15,14 @@ class ViewParameters:
 VIEW_1_1_1 = ViewParameters()
 VIEW_2_2_1 = ViewParameters(offset=(0, 0, 0.85), scale=0.57, aspect_ratio=0.84)
 
-def save_image(width, output_file):
+def save_image(width, output_file, aspect_ratio):
     glPixelStorei(GL_PACK_ALIGNMENT, 1)
     data = glReadPixels(0, 0, width, width, GL_RGB, GL_UNSIGNED_BYTE)
 
     image = Image.frombytes("RGB", (width, width), data)
+    height = int(width * aspect_ratio)
     image = image.transpose(Image.FLIP_TOP_BOTTOM)
+    image = image.crop((0, 0, width, height))
     image.save(output_file)
 
 
@@ -40,7 +42,7 @@ def get_display_function(draw_func, width, output_file, view_parameters):
 
         glFlush()
 
-        save_image(width, output_file)
+        save_image(width, output_file, view_parameters.aspect_ratio)
         glutDestroyWindow(glutGetWindow())
 
     return display
