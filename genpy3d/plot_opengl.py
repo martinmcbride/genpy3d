@@ -37,6 +37,7 @@ class Plot_z_of_xy:
         return self
 
     def with_grid(self, x_grid_count=20, y_grid_count=20, grid_color=(0.3, 0.3, 0.3), line_radius=0.004, grid_precision=500):
+        self.grid = True
         self.x_grid_count = x_grid_count
         self.y_grid_count = y_grid_count
         self.grid_color = grid_color
@@ -147,6 +148,7 @@ class Plot_z_of_xy:
 
     def _plot_lines(self):
         if self.grid:
+            glColor3f(self.grid_color[0], self.grid_color[1], self.grid_color[1])
             for x in np.linspace(self.x_range_min, self.x_range_max, self.x_grid_count):
                 points = []
                 for y in np.linspace(self.y_range_min, self.y_range_max, 500):

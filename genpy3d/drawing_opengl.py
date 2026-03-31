@@ -25,8 +25,6 @@ class VIEW_2_2_1:
     text_offset: tuple = ((0.15, 0.25, 0.15), (0.3, 0, 0), (0, 0.12, 0))
     axis_text_offset: tuple = ((0.16, 0.45, 0.16), (0.55, 0, 0.16), (0, 0.4, 0))
 
-#VIEW_2_2_1 = ViewParameters(offset=(0, 0, 0.85), scale=0.57, aspect_ratio=0.84)
-
 def save_image(width, output_file, aspect_ratio):
     glPixelStorei(GL_PACK_ALIGNMENT, 1)
     data = glReadPixels(0, 0, width, width, GL_RGB, GL_UNSIGNED_BYTE)
@@ -50,7 +48,7 @@ def get_display_function(draw_func, width, output_file, view_parameters):
         glRotatef(0, 0, 0, 1)
         glScalef(view_parameters.scale, view_parameters.scale, view_parameters.scale)
         glTranslatef(view_parameters.offset[0], view_parameters.offset[1], view_parameters.offset[2])
-        draw_func()
+        draw_func(view_parameters)
 
         glFlush()
 
@@ -81,7 +79,7 @@ def make_opengl_3dimage(outfile, draw, width, background=0, channels=3, view_par
 
     init(width, view_parameters)
 
-    draw()
+    draw(view_parameters)
 
     glutDisplayFunc(get_display_function(draw, width, outfile, view_parameters))
 
