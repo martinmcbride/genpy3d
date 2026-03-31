@@ -18,16 +18,30 @@ class Plot_z_of_xy:
     precision: float = 100
     fore_colormap: Callable = get_viridis_color
     back_colormap: Callable = get_grey_color
+    grid = False
     x_grid_count: int = 10
     y_grid_count: int = 10
+    grid_color = (0.3, 0.3, 0.3)
     line_radius = 0.004
+    grid_precision=500
 
     def __post_init__(self):
         self.x_range_min, self.x_range_max = self.axes.start[0], self.axes.start[0] + self.axes.extent[0]
         self.y_range_min, self.y_range_max = self.axes.start[1], self.axes.start[1] + self.axes.extent[1]
 
-    def of_function(self, func):
+    def of_function(self, func, grid_color=get_viridis_color, back_color=get_grey_color, precision=100):
         self.plotfunc = func
+        self.grid_color = grid_color
+        self.back_color = back_color
+        self.precision = precision
+        return self
+
+    def with_grid(self, x_grid_count=10, y_grid_count=10, grid_color=(0.3, 0.3, 0.3), line_radius=0.004, grid_precision=500):
+        self.x_grid_count = x_grid_count
+        self.y_grid_count = y_grid_count
+        self.grid_color = grid_color
+        self.line_radius = line_radius
+        self.grid_precision = grid_precision
         return self
 
     def _get_color(self, colormap, z):
@@ -132,32 +146,26 @@ class Plot_z_of_xy:
         glDisable(GL_CULL_FACE)
 
     def _plot_lines(self):
-        glColor3f(0.3, 0.3, 0.3)
-        glLineWidth(4)
+        if self.grid:
+            for x in np.linspace(self.x_range_min, self.x_range_max, self.x_grid_count):
+                points = []
+                for y in np.linspace(self.y_range_min, self.y_range_max, 500):
+                    z = self.plotfunc(x, y)
+                    points.append(self.axes.transform_from_graph((x, y, z)))
+                for i in range(len(points) - 1):
+                    self._draw_cylinder(points[i], points[i + 1])
 
-        for x in np.linspace(self.x_range_min, self.x_range_max, self.x_grid_count):
-            points = []
-            for y in np.linspace(self.y_range_min, self.y_range_max, 500):
-                z = self.plotfunc(x, y)
-                points.append(self.axes.transform_from_graph((x, y, z)))
-            for i in range(len(points) - 1):
-                self._draw_cylinder(points[i], points[i + 1])
-
-        for y in np.linspace(self.y_range_min, self.y_range_max, self.y_grid_count):
-            points = []
-            for x in np.linspace(self.x_range_min, self.x_range_max, 500):
-                z = self.plotfunc(x, y)
-                points.append(self.axes.transform_from_graph((x, y, z)))
-            for i in range(len(points) - 1):
-                self._draw_cylinder(points[i], points[i + 1])
+            for y in np.linspace(self.y_range_min, self.y_range_max, self.y_grid_count):
+                points = []
+                for x in np.linspace(self.x_range_min, self.x_range_max, 500):
+                    z = self.plotfunc(x, y)
+                    points.append(self.axes.transform_from_graph((x, y, z)))
+                for i in range(len(points) - 1):
+                    self._draw_cylinder(points[i], points[i + 1])
 
 
     def draw(self):
-
         self._clip()
-
         self._plot_surface()
         self._plot_lines()
-
-
         self._unclip()
