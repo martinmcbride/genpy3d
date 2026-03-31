@@ -1,7 +1,6 @@
 import unittest
 from genpy3d.drawing_opengl import make_opengl_3dimage, VIEW_2_2_1, VIEW_1_1_1
 from genpy3d.axes_opengl import Axes
-from genpy3d.plot_opengl import Plot_z_of_xy
 from tests.image_test_helper import run_image_test
 
 

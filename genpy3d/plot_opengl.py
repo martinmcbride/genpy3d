@@ -19,8 +19,8 @@ class Plot_z_of_xy:
     fore_colormap: Callable = get_viridis_color
     back_colormap: Callable = get_grey_color
     grid = False
-    x_grid_count: int = 10
-    y_grid_count: int = 10
+    x_grid_count: int = 20
+    y_grid_count: int = 20
     grid_color = (0.3, 0.3, 0.3)
     line_radius = 0.004
     grid_precision=500
@@ -36,7 +36,7 @@ class Plot_z_of_xy:
         self.precision = precision
         return self
 
-    def with_grid(self, x_grid_count=10, y_grid_count=10, grid_color=(0.3, 0.3, 0.3), line_radius=0.004, grid_precision=500):
+    def with_grid(self, x_grid_count=20, y_grid_count=20, grid_color=(0.3, 0.3, 0.3), line_radius=0.004, grid_precision=500):
         self.x_grid_count = x_grid_count
         self.y_grid_count = y_grid_count
         self.grid_color = grid_color
