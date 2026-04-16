@@ -13,7 +13,7 @@ class Test_z_of_xy_Plots(unittest.TestCase):
         def creator(file):
             def draw(view_parameters):
                 axes = Axes().draw(view_parameters)
-                Plot_z_of_xy(axes).of_function(lambda x, y: 0.5 + 0.4*math.sin(x*10)*math.sin(y*10)).draw(view_parameters)
+                Plot_z_of_xy(axes).of_function(lambda x, y: 0.5 + 0.4*math.sin(x*10)*math.sin(y*10)).draw()
 
             make_opengl_3dimage(file, draw, 500)
 
@@ -25,7 +25,7 @@ class Test_z_of_xy_Plots(unittest.TestCase):
         def creator(file):
             def draw(view_parameters):
                 axes = Axes().of_size((2, 2, 1)).of_extent((1, 1, 0.5)).draw(view_parameters)
-                Plot_z_of_xy(axes).of_function(lambda x, y: 0.25 + 0.4*math.sin(x*10)*math.sin(y*10)).draw(view_parameters)
+                Plot_z_of_xy(axes).of_function(lambda x, y: 0.25 + 0.4*math.sin(x*10)*math.sin(y*10)).draw()
 
             make_opengl_3dimage(file, draw, 500, view_parameters=VIEW_2_2_1)
 
