@@ -35,19 +35,17 @@ class Test_xyz_of_uv_Plots(unittest.TestCase):
                 fy = lambda u, v: v
 
                 def fx(u, v):
-                    if u > 0.01:
-                        return v*math.sin(u)
-                    else:
-                        return 2
+                    if v < 0.01:
+                        v = 0.01
+                    return math.sin(u)/v
 
                 def fz(u, v):
-                    if u > 0.01:
-                        return v*math.cos(1/u)
-                    else:
-                        return 2
+                    if v < 0.01:
+                        v = 0.01
+                    return math.cos(u)/v
 
-                axes = Axes().of_start((-1.2, 0, -1.2)).of_extent((2.4, 10, 2.4)).of_divs((1, 2, 1)).draw(view_parameters)
-                Plot_xyz_of_uv(axes).of_function(fx, fy, fz, extent_u=(0, 2*math.pi), extent_v=(1, 10)).with_grid().draw()
+                axes = Axes().of_start((-1.5, -2, -1.5)).of_extent((3, 12, 3)).of_divs((1, 5, 1)).with_reverse_axes((0, 1, 0)).draw(view_parameters)
+                Plot_xyz_of_uv(axes).of_function(fx, fy, fz, extent_u=(0, 2*math.pi), extent_v=(1, 10)).with_grid(10, 10).draw()
 
             make_opengl_3dimage(file, draw, 500)
 

@@ -188,8 +188,8 @@ class Plot_xyz_of_uv:
     plotfunc_z: Callable = lambda x, y: 0
     extent_u = (0, 1)
     extent_v = (0, 1)
-    x_grid_count: int = 20
-    y_grid_count: int = 20
+    u_grid_count: int = 20
+    v_grid_count: int = 20
 
     def of_function(self, func_x, func_y, func_z, extent_u=(0, 1), extent_v=(0, 1), grid_color=get_viridis_color, back_color=get_grey_color, precision=100):
         self.plotfunc_x = func_x
@@ -322,7 +322,7 @@ class Plot_xyz_of_uv:
     def _plot_lines(self):
         if self.grid:
             glColor3f(self.grid_color[0], self.grid_color[1], self.grid_color[2])
-            for u in np.linspace(self.extent_u[0], self.extent_u[1], self.x_grid_count):
+            for u in np.linspace(self.extent_u[0], self.extent_u[1], self.u_grid_count):
                 points = []
                 for v in np.linspace(self.extent_v[0], self.extent_v[1], 500):
                     x = self.plotfunc_x(u, v)
@@ -332,7 +332,7 @@ class Plot_xyz_of_uv:
                 for i in range(len(points) - 1):
                     self._draw_cylinder(points[i], points[i + 1])
 
-            for v in np.linspace(self.extent_v[0], self.extent_v[1], self.y_grid_count):
+            for v in np.linspace(self.extent_v[0], self.extent_v[1], self.v_grid_count):
                 points = []
                 for u in np.linspace(self.extent_u[0], self.extent_u[1], 500):
                     x = self.plotfunc_x(u, v)
