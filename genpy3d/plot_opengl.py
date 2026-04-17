@@ -322,18 +322,22 @@ class Plot_xyz_of_uv:
     def _plot_lines(self):
         if self.grid:
             glColor3f(self.grid_color[0], self.grid_color[1], self.grid_color[2])
-            for x in np.linspace(self.extent_u[0], self.extent_u[1], self.x_grid_count):
+            for u in np.linspace(self.extent_u[0], self.extent_u[1], self.x_grid_count):
                 points = []
-                for y in np.linspace(self.extent_v[0], self.extent_v[1], 500):
-                    z = self.plotfunc(x, y)
+                for v in np.linspace(self.extent_v[0], self.extent_v[1], 500):
+                    x = self.plotfunc_x(u, v)
+                    y = self.plotfunc_y(u, v)
+                    z = self.plotfunc_z(u, v)
                     points.append(self.axes.transform_from_graph((x, y, z)))
                 for i in range(len(points) - 1):
                     self._draw_cylinder(points[i], points[i + 1])
 
-            for y in np.linspace(self.extent_v[0], self.extent_v[1], self.y_grid_count):
+            for v in np.linspace(self.extent_v[0], self.extent_v[1], self.y_grid_count):
                 points = []
-                for x in np.linspace(self.extent_u[0], self.extent_u[1], 500):
-                    z = self.plotfunc(x, y)
+                for u in np.linspace(self.extent_u[0], self.extent_u[1], 500):
+                    x = self.plotfunc_x(u, v)
+                    y = self.plotfunc_y(u, v)
+                    z = self.plotfunc_z(u, v)
                     points.append(self.axes.transform_from_graph((x, y, z)))
                 for i in range(len(points) - 1):
                     self._draw_cylinder(points[i], points[i + 1])
