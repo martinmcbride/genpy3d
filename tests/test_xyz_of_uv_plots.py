@@ -28,6 +28,31 @@ class Test_xyz_of_uv_Plots(unittest.TestCase):
 
         self.assertTrue(run_image_test('test_default_xyz_of_uv_plot.png', creator))
 
+    def test_gabriels_horn_xyz_of_uv_plot(self):
+
+        def creator(file):
+            def draw(view_parameters):
+                fy = lambda u, v: v
+
+                def fx(u, v):
+                    if u > 0.01:
+                        return v*math.sin(u)
+                    else:
+                        return 2
+
+                def fz(u, v):
+                    if u > 0.01:
+                        return v*math.cos(1/u)
+                    else:
+                        return 2
+
+                axes = Axes().of_start((-1.2, 0, -1.2)).of_extent((2.4, 10, 2.4)).of_divs((1, 2, 1)).draw(view_parameters)
+                Plot_xyz_of_uv(axes).of_function(fx, fy, fz, extent_u=(0, 2*math.pi), extent_v=(1, 10)).with_grid().draw()
+
+            make_opengl_3dimage(file, draw, 500)
+
+        self.assertTrue(run_image_test('test_gabriels_horn_xyz_of_uv_plot.png', creator))
+
     #
     # def test_wide_clipped_xyz_of_uv_plot(self):
     #
