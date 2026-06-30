@@ -5,6 +5,8 @@ import numpy as np
 from OpenGL.GL import *
 from OpenGL.GLUT import *
 from OpenGL.GLU import *
+from PIL import ImageFont, Image, ImageDraw
+
 
 def _draw_arrow(x,y,z,color):
     glPushMatrix()
@@ -39,7 +41,7 @@ class Axes:
         self.extent = extent
         return self
 
-    def of_divs(self, divs):
+    def with_divisions(self, divs):
         self.divs = divs
         return self
 
@@ -166,7 +168,7 @@ class Axes:
         # Draw x axis label
         pos = self.transform_from_graph((self.start[0]+self.extent[0]/2, self.start[1]+self.extent[1], 0))
         glRasterPos3f(pos[0] + view_parameters.axis_text_offset[0][0], self._get_device_end(1) + view_parameters.axis_text_offset[0][1], 0)
-        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, ord("X"))
+        draw_text(0, 0, "X")
 
         # Draw Y tick labels
         glColor3f(*self.axis_colors[1])
