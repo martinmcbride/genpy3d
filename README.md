@@ -1,5 +1,7 @@
 # genpy3d
 
-3d graph plotting with opengl.
+3d graph plotting with opengl and povray.
 
-Currently in development, some functions might not work correctly, and all aspects the api are potentially subject to change.
+These are experimental modules that I hope to fully develop later and add into generativepy.
+
+The code basically works, but at the moment the unit tests might fail due to the source code being gathered from other repos and possibly not bring in the right folders. There are also some system dependencies, mainly that opengl and povray need to be installed. 
