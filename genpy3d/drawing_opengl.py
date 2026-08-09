@@ -5,6 +5,9 @@ from OpenGL.GLUT import *
 from OpenGL.GLU import *
 from PIL import Image
 
+from genpy3d.render_text import draw_text_pixels
+
+
 @dataclass(frozen=True)
 class VIEW_1_1_1:
     lookat: tuple = (2, 2, 1)
@@ -49,6 +52,14 @@ def get_display_function(draw_func, width, output_file, view_parameters):
         glScalef(view_parameters.scale, view_parameters.scale, view_parameters.scale)
         glTranslatef(view_parameters.offset[0], view_parameters.offset[1], view_parameters.offset[2])
         draw_func(view_parameters)
+
+        draw_text_pixels(
+            "Hello from glDrawPixels!",
+            x=50,
+            y=50,
+            font_size=42,
+            color=(255, 255, 255, 255)
+        )
 
         glFlush()
 

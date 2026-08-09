@@ -168,7 +168,7 @@ class Axes:
         # Draw x axis label
         pos = self.transform_from_graph((self.start[0]+self.extent[0]/2, self.start[1]+self.extent[1], 0))
         glRasterPos3f(pos[0] + view_parameters.axis_text_offset[0][0], self._get_device_end(1) + view_parameters.axis_text_offset[0][1], 0)
-        draw_text(0, 0, "X")
+#        draw_text(0, 0, "X")
 
         # Draw Y tick labels
         glColor3f(*self.axis_colors[1])
